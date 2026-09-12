@@ -1,0 +1,29 @@
+# Probe: input signature fidelity
+
+## Inner scope with its own required input
+
+```catala
+declaration scope Inner:
+  input threshold content money
+  output flag content boolean
+
+scope Inner:
+  definition flag equals threshold > $100
+```
+
+## Outer scope: context var, input var, and a subscope
+
+```catala
+declaration scope Outer:
+  input salary content money
+  context rate content decimal
+  internal hidden content integer
+  sub scope Inner
+  output result content money
+
+scope Outer:
+  definition rate equals 10%
+  definition hidden equals 42
+  definition sub.threshold equals salary
+  definition result equals salary * rate
+```

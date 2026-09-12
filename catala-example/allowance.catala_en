@@ -1,0 +1,65 @@
+# Allowance Act — smoke test
+
+## Definitions
+
+```catala-metadata
+declaration scope Allowance:
+  input income content money
+  input dependants content integer
+  output amount content money
+```
+
+## Article 1 — Base rate
+
+The allowance is $1,000 per month.
+
+```catala
+scope Allowance:
+  label base
+  definition amount equals $1,000
+```
+
+## Article 2 — Reduced rate
+
+Where the claimant's income exceeds $50,000, the allowance is $400.
+
+```catala
+scope Allowance:
+  label reduced exception base
+  definition amount
+    under condition income > $50,000
+    consequence equals $400
+```
+
+## Article 3 — Exemption for large families
+
+Notwithstanding Article 2, a claimant with more than two dependants
+receives the full allowance.
+
+```catala
+scope Allowance:
+  exception reduced
+  definition amount
+    under condition dependants > 2
+    consequence equals $1,000
+```
+
+## Tests
+
+```catala
+#[test] declaration scope TestExemption:
+  a scope Allowance
+  output amount content money
+
+scope TestExemption:
+  definition a.income equals $60,000
+  definition a.dependants equals 3
+  definition amount equals a.amount
+```
+
+```catala-test-cli
+$ catala test-scope TestExemption
+┌─[RESULT]─ TestExemption ─
+│ amount = $1,000.00
+└─
+```
